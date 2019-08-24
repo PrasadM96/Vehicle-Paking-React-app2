@@ -25,9 +25,7 @@ import Sidebar from "components/Sidebar/Sidebar";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.jsx";
 
 import { style } from "variables/Variables.jsx";
-
 import routes from "routes.js";
-
 import image from "assets/img/sidebar-3.jpg";
 
 class Admin extends Component {
@@ -173,9 +171,13 @@ class Admin extends Component {
     return (
       <div className="wrapper">
         <NotificationSystem ref="notificationSystem" style={style} />
-        <Sidebar {...this.props} routes={routes} image={this.state.image}
-        color={this.state.color}
-        hasImage={this.state.hasImage}/>
+        <Sidebar
+          {...this.props}
+          routes={routes}
+          image={this.state.image}
+          color={this.state.color}
+          hasImage={this.state.hasImage}
+        />
         <div id="main-panel" className="main-panel" ref="mainPanel">
           <AdminNavbar
             {...this.props}

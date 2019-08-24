@@ -3,10 +3,22 @@ html {
   height: 100%;
 }
 .bg {
-  background-image: url("https://mdbootstrap.com/img/Photos/Horizontal/Nature/full page/img(20).jpg");
+  background-image: url("https://images.pexels.com/photos/164634/pexels-photo-164634.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
   height: 100vh;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.9;
+}
+#about {
+  text-align: center;
+}
+
+.align-items-center {
+  -ms-flex-align: left !important;
+  align-items: left !important;
+}
+.d-flex {
+  display: -ms-flexbox !important;
+  display: flex !important;
 }

@@ -16,6 +16,9 @@
 
 */
 import React, { Component } from "react";
+import StripeCheckout from "react-stripe-checkout";
+import axios from "axios";
+import { toast } from "react-toastify";
 import {
   Grid,
   Row,
@@ -33,6 +36,60 @@ import Button from "components/CustomButton/CustomButton.jsx";
 import avatar from "assets/img/faces/face-3.jpg";
 
 class UserProfile extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      amount: 100
+    };
+  }
+
+  amountHandler = e => {
+    this.setState({
+      [e.target.id]: e.target.value * 100
+    });
+    console.log(this.state.amount);
+  };
+
+  // async onToken(token) {
+  //   const response = await axios.post("https://fr4e5.sse.codesandbox.io/", {
+  //     token
+  //   });
+  //   const { status } = response.data;
+  //   console.log("Response:", response.data);
+  //   if (status === "success") {
+  //     toast("Success! Check email for details", { type: "success" });
+  //   } else {
+  //     toast("Something went wrong", { type: "error" });
+  //   }
+  // }
+  onToken = token => {
+    fetch("/save-stripe-token", {
+      method: "POST",
+      body: JSON.stringify(token)
+    }).then(response => {
+      // response.json().then(data => {
+      // alert(`We are in business, ${data.email}`);
+      // });
+      console.log(token);
+      this.setState({ isPay: true });
+    });
+  };
+
+  // onToken = token => {
+  //   console.log(token);
+  //   const stripe = require("stripe")("STRIPE_SECRET_KEY");
+  //   const uuid = require("uuid/v4");
+
+  //   // fetch("/save-stripe-token", {
+  //   //   method: "POST",y
+
+  //   //   body: JSON.stringify(token)
+  //   // }).then(response => {
+  //   //   response.json().then(data => {
+  //   //     alert(`We are in business, ${data.email}`);
+  //   //   });
+  //   // });
+  // };
   render() {
     return (
       <div className="content">
@@ -175,6 +232,27 @@ class UserProfile extends Component {
                     <Button simple>
                       <i className="fa fa-google-plus-square" />
                     </Button>
+                  </div>
+                }
+              />
+              <Card
+                title="Payment"
+                content={
+                  <div>
+                    <h5>Make your payment here</h5>
+                    <input
+                      id="amount"
+                      type="text"
+                      placeholder="Amount"
+                      onChange={this.amountHandler}
+                    />
+                    <br />
+                    <br />
+                    <StripeCheckout
+                      amount={this.state.amount}
+                      token={this.onToken}
+                      stripeKey="pk_test_JUiqa63RymMAqKT2FzqX4BAG00CGgljYEu"
+                    />
                   </div>
                 }
               />

@@ -6,7 +6,7 @@ import Temp from "./views/Temp";
 
 class App extends Component {
   state = {
-    loggedin: false
+    loggedin: false //if signin
   };
   render() {
     return this.state.loggedin ? (

@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import SignIn from "./SignIn";
-import SignUp from "./SignUp";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Redirect } from "react-router-dom";
 import Route from "react-router-dom/Route";
-
+import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Navbar,
   Form,
@@ -14,10 +13,14 @@ import {
   NavItem
 } from "react-bootstrap";
 import signIn from "./SignIn";
+import DetailedForm from "./DetailForm";
 import "../components/Background/Background.css";
 
 class Temp extends Component {
-  state = {};
+  state = {
+    regitered: false,
+    login: false
+  };
   render() {
     return (
       <div>
@@ -28,21 +31,25 @@ class Temp extends Component {
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav pullRight>
-                  <NavItem eventKey={1} exact href="/signin">
-                    Login
+                  <NavItem eventKey={2} exact href="#about">
+                    About Us
                   </NavItem>
-                  <NavItem eventKey={2} exact href="/signup">
-                    SignUp
+                  <NavItem eventKey={1} exact href="/signin">
+                    SignIn & SignUp
                   </NavItem>
                 </Nav>
               </Navbar.Collapse>
             </Navbar>
-
+            {/* if({this.state.regitered === true}){<Redirect to="/detailForm" />} */}
             <Route path="/signin" component={signIn} />
-            <Route path="/signup" component={SignUp} />
+            <Route path="/detailForm" component={DetailedForm} />
           </Router>
         </div>
-        <h1>Rest</h1>
+        <h1 id="about" className="about">
+          <br />
+          <br />
+          About Us
+        </h1>
       </div>
     );
   }
