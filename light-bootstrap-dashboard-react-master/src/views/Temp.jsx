@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import SignIn from "./SignIn";
 import { BrowserRouter as Router, Redirect } from "react-router-dom";
 import Route from "react-router-dom/Route";
+//import { Redirect } from "react-router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Navbar,
@@ -18,9 +19,16 @@ import "../components/Background/Background.css";
 
 class Temp extends Component {
   state = {
-    regitered: false,
+    regitered: true,
     login: false
   };
+
+  load() {
+    if (this.state.registered === true) {
+      return <Redirect to="/admin/detailForm" />;
+    }
+  }
+
   render() {
     return (
       <div>
@@ -40,7 +48,8 @@ class Temp extends Component {
                 </Nav>
               </Navbar.Collapse>
             </Navbar>
-            {/* if({this.state.regitered === true}){<Redirect to="/detailForm" />} */}
+            <div />
+
             <Route path="/signin" component={signIn} />
             <Route path="/detailForm" component={DetailedForm} />
           </Router>

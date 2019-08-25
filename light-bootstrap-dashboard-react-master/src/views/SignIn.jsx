@@ -1,14 +1,20 @@
 import React, { Component } from "react";
 import "./SignUp.css";
 import fbConfig from "./Config";
+import firebase from "firebase";
+
+import DetailedForm from "./DetailForm";
 
 class signUp extends Component {
-  state = {
-    isLoginOpen: true,
-    isRegisterOpen: false,
-    registered: false,
-    val: 0
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoginOpen: true,
+      isRegisterOpen: false,
+      registered: false,
+      val: 0
+    };
+  }
 
   showLoginBox() {
     this.setState({ isLoginOpen: true, isRegisterOpen: false });
@@ -16,6 +22,10 @@ class signUp extends Component {
 
   showRegisterBox() {
     this.setState({ isRegisterOpen: true, isLoginOpen: false });
+  }
+
+  componentDidMount() {
+    console.log(this.props);
   }
 
   render() {
@@ -128,13 +138,16 @@ class LoginBox extends React.Component {
 class RegisterBox extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
+      array: "",
       rfid: "",
       confirm: "",
       password: "",
       errors: [],
       val: 0,
-      pwdState: null
+      pwdState: null,
+      registered: true
     };
   }
 
@@ -211,20 +224,22 @@ class RegisterBox extends React.Component {
     if (this.state.val === 0) {
       const app = fbConfig.database().ref("Car_Parking/Registered");
       let values;
-      let array;
+
       app.on("value", snapshot => {
         values = snapshot.val();
 
-        console.log(Object.keys(values));
+        this.array = Object.keys(values);
 
-        this.setState({ registered: true });
+        console.log("yessss");
+
+        this.array.map(e => {
+          if (this.state.rfid === e) {
+            console.log("yes");
+            this.setState({ registered: true });
+          }
+        });
       });
-
-      if (this.state.rfid === "42 15 20 20") {
-        this.setState({ val: 0 });
-      }
     }
-
     this.setState({ val: 0 });
   };
 
@@ -268,6 +283,7 @@ class RegisterBox extends React.Component {
     return (
       <div className="inner-container">
         <div className="header">Register</div>
+
         <div className="box">
           <div className="input-group">
             <label htmlFor="username">RFID Card Number</label>
@@ -283,7 +299,6 @@ class RegisterBox extends React.Component {
               {usernameErr ? usernameErr : ""}
             </small>
           </div>
-
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
@@ -312,7 +327,6 @@ class RegisterBox extends React.Component {
               </div>
             )}
           </div>
-
           <div className="input-group">
             <label htmlFor="confirm">Confirm Password</label>
             <input
@@ -327,7 +341,6 @@ class RegisterBox extends React.Component {
               {confirmErr ? confirmErr : ""}
             </small>
           </div>
-
           <button
             type="button"
             className="login-btn"
@@ -336,6 +349,7 @@ class RegisterBox extends React.Component {
             Register
           </button>
         </div>
+        <signUp reg={255} />
       </div>
     );
   }

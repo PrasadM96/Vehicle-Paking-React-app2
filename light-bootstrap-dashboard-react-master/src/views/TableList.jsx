@@ -19,7 +19,7 @@ import React, { Component } from "react";
 import { Grid, Row, Col, Table } from "react-bootstrap";
 
 import Card from "components/Card/Card.jsx";
-import { thArray, tdArray } from "variables/Variables.jsx";
+//import { thArray, tdArray } from "variables/Variables.jsx";
 import firebase from "firebase";
 import app1 from "./Config";
 
@@ -29,41 +29,61 @@ class TableList extends Component {
 
     this.state = {
       tag: "13 08 02 21",
-      person: [],
+      val1: [],
+      val2: [],
+      acc_bal: 0,
+      name: 0,
       Date: 0,
       Hours: 0,
       Minutes: 0,
       Month: 0,
       Year: 0,
-      Status: 0
+      Status: 0,
+      ispaid: 0,
+      tel: 0,
+      length: 0
     };
 
-    this.app = app1
-      .database()
-      .ref("Car_Parking")
-      .child(this.state.tag);
+    this.app = app1.database().ref("Car_Parking/Registered");
   }
 
   componentDidMount() {
     let values;
-
     this.app.on("value", snapshot => {
-      values = snapshot.val();
+      snapshot.forEach(childsnap => {
+        const lock = {
+          id: childsnap.key.toString(),
+          name: childsnap.val().Name,
+          acc_bal: childsnap.val().Acc_bal,
+          tel: childsnap.val().Tel
+        };
+        const lock2 = {
+          status: childsnap.child("Park").val().Status,
+          ispaid: childsnap.child("Park").val().isPaid
+        };
 
-      console.log(values);
-      this.setState({
-        person: values,
-        Date: values["Park"]["Park_Time"]["Date"],
-        Hours: values["Park"]["Park_Time"]["Hour"],
-        Minutes: values["Park"]["Park_Time"]["Minutes"],
-        Month: values["Park"]["Park_Time"]["Month"],
-        Year: values["Park"]["Park_Time"]["Year"],
-        Status: values["Park"]["Status"]
+        //console.log(lock2);
+
+        this.setState({
+          val1: lock,
+          val2: lock2
+        });
+        //console.log(this.state.val);
       });
+
+      // values = snapshot.val().key.toString();
+      // console.log(values);
+      // //console.log(Object.values(Object.values(values)));
+      // //console.log(Object.keys(values).length);
+      // // this.setState({
+      // //   val: Object.values(Object.values(values)),
+      // //   id: Object.keys(values),
+      // //   length: Object.keys(values).length
+      // // });
+      // console.log(this.state.acc_bal);
     });
   }
 
-  //   const thArray = ["ID", "Name", "Salary", "Country", "City"];
   // const tdArray = [
   //   ["1", "Dakota Rice", "$36,738", "Niger", "Oud-Turnhout"],
   //   ["2", "Minerva Hooper", "$23,789", "Curaçao", "Sinaai-Waas"],
@@ -74,6 +94,26 @@ class TableList extends Component {
   // ];
 
   render() {
+    //console.log(this.state.id);
+
+    const len = this.state.val1.length;
+    console.log(len);
+    const thArray = ["ID", "Name", "Account Balance", "Status"];
+
+    const tdArray = new Array(len);
+
+    Object.keys(this.state.val1);
+    const arr = Object.values(this.state.val1);
+    console.log(arr);
+
+    for (let i = 0; i < len; i++) {
+      for (let j = 0; j < thArray.length; j++) {
+        tdArray[i] = new Array(thArray.length);
+        tdArray[i][j] = arr[j];
+      }
+    }
+    console.log(tdArray);
+
     return (
       <div className="content">
         <Grid fluid>
