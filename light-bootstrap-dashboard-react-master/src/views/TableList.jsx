@@ -17,6 +17,7 @@
 */
 import React, { Component } from "react";
 import { Grid, Row, Col, Table } from "react-bootstrap";
+import "./TableList.css";
 
 import Card from "components/Card/Card.jsx";
 //import { thArray, tdArray } from "variables/Variables.jsx";
@@ -28,92 +29,38 @@ class TableList extends Component {
     super();
 
     this.state = {
-      tag: "13 08 02 21",
-      val1: [],
-      val2: [],
-      acc_bal: 0,
-      name: 0,
-      Date: 0,
-      Hours: 0,
-      Minutes: 0,
-      Month: 0,
-      Year: 0,
-      Status: 0,
-      ispaid: 0,
-      tel: 0,
-      length: 0
+      val1: []
     };
-
-    this.app = app1.database().ref("Car_Parking/Registered");
   }
-
   componentDidMount() {
-    let values;
-    this.app.on("value", snapshot => {
-      snapshot.forEach(childsnap => {
-        const lock = {
-          id: childsnap.key.toString(),
-          name: childsnap.val().Name,
-          acc_bal: childsnap.val().Acc_bal,
-          tel: childsnap.val().Tel
-        };
-        const lock2 = {
-          status: childsnap.child("Park").val().Status,
-          ispaid: childsnap.child("Park").val().isPaid
-        };
+    const wordref = app1.database().ref("Car_Parking/Registered");
+    wordref.on("value", snapshot => {
+      let val1 = snapshot.val();
+      let newState = [];
 
-        //console.log(lock2);
-
-        this.setState({
-          val1: lock,
-          val2: lock2
+      for (let val in val1) {
+        newState.push({
+          id: val,
+          name: val1[val].Name,
+          acc_bal: val1[val].Acc_bal,
+          telephone: val1[val].Tel,
+          status: val1[val]["Park"].Status,
+          isPaid: val1[val]["Park"].isPaid,
+          date: val1[val]["Park"]["Park_Time"].Date,
+          hour: val1[val]["Park"]["Park_Time"].Hour,
+          minutes: val1[val]["Park"]["Park_Time"].Minutes,
+          month: val1[val]["Park"]["Park_Time"].Month,
+          year: val1[val]["Park"]["Park_Time"].Year
         });
-        //console.log(this.state.val);
-      });
+      }
 
-      // values = snapshot.val().key.toString();
-      // console.log(values);
-      // //console.log(Object.values(Object.values(values)));
-      // //console.log(Object.keys(values).length);
-      // // this.setState({
-      // //   val: Object.values(Object.values(values)),
-      // //   id: Object.keys(values),
-      // //   length: Object.keys(values).length
-      // // });
-      // console.log(this.state.acc_bal);
+      this.setState({
+        val1: newState
+      });
     });
   }
 
-  // const tdArray = [
-  //   ["1", "Dakota Rice", "$36,738", "Niger", "Oud-Turnhout"],
-  //   ["2", "Minerva Hooper", "$23,789", "Curaçao", "Sinaai-Waas"],
-  //   ["3", "Sage Rodriguez", "$56,142", "Netherlands", "Baileux"],
-  //   ["4", "Philip Chaney", "$38,735", "Korea, South", "Overland Park"],
-  //   ["5", "Doris Greene", "$63,542", "Malawi", "Feldkirchen in Kärnten"],
-  //   ["6", "Mason Porter", "$78,615", "Chile", "Gloucester"]
-  // ];
-
   render() {
-    //console.log(this.state.id);
-
-    const len = this.state.val1.length;
-    console.log(len);
-    const thArray = ["ID", "Name", "Account Balance", "Status"];
-
-    const tdArray = new Array(len);
-
-    Object.keys(this.state.val1);
-    const arr = Object.values(this.state.val1);
-    console.log(arr);
-
-    for (let i = 0; i < len; i++) {
-      for (let j = 0; j < thArray.length; j++) {
-        tdArray[i] = new Array(thArray.length);
-        tdArray[i][j] = arr[j];
-      }
-    }
-    console.log(tdArray);
-
     return (
       <div className="content">
         <Grid fluid>
@@ -125,93 +72,135 @@ class TableList extends Component {
                 ctTableFullWidth
                 ctTableResponsive
                 content={
-                  <Table striped hover>
-                    <thead>
-                      <tr>
-                        {thArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tdArray.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
+                  <div>
+                    <div>
+                      <table class="table table-stripe">
+                        <tr>
+                          <th>
+                            <font color="black">RFID Number</font>
+                          </th>
+                          <th>
+                            <font color="black">Name</font>
+                          </th>
+
+                          <th>
+                            <font cplor="black"> Status</font>
+                          </th>
+                        </tr>
+
+                        <tbody>
+                          {this.state.val1.map(val => {
+                            return (
+                              <tr>
+                                <td>{val.id}</td>
+                                <td>{val.name}</td>
+
+                                <td>{val.status}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 }
               />
             </Col>
 
-            {/* <Col md={12}>
+            <Col md={12}>
               <Card
                 plain
-                title="Striped Table with Hover"
-                category="Here is a subtitle for this table"
+                title="Customer Personal Details"
+                category="Personal detailsof registered customers"
                 ctTableFullWidth
                 ctTableResponsive
                 content={
-                  <Table hover>
-                    <thead>
-                      <tr>
-                        {thArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tdArray.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                }
-              />
-            </Col> */}
-            <Col md={12}>
-              <Card
-                title="Personal data"
-                category="Here is a subtitle for this table"
-                ctTableFullWidth
-                ctTableResponsive
-                content={
-                  <Table striped hover>
-                    <thead>
-                      <tr>
-                        {thArray.map((prop, key) => {
-                          return <th key={key}>{prop}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tdArray.map((prop, key) => {
-                        return (
-                          <tr key={key}>
-                            {prop.map((prop, key) => {
-                              return <td key={key}>{prop}</td>;
-                            })}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
+                  <div>
+                    <div>
+                      <table class="table table-stripe">
+                        <tr>
+                          <th>
+                            <font color="black">RFID Number</font>
+                          </th>
+                          <th>
+                            <font color="black">Name</font>
+                          </th>
+                          <th>
+                            <font cplor="black">Account Balance</font>
+                          </th>
+                          <th>
+                            <font cplor="black">Telephone Number</font>
+                          </th>
+                        </tr>
+
+                        <tbody>
+                          {this.state.val1.map(val => {
+                            return (
+                              <tr>
+                                <td>{val.id}</td>
+                                <td>{val.name}</td>
+                                <td>{val.acc_bal}</td>
+                                <td>{val.telephone}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 }
               />
             </Col>
 
             <Col md={12}>
+              <Card
+                title="Parking Details"
+                category="Here is a subtitle for this table"
+                ctTableFullWidth
+                ctTableResponsive
+                content={
+                  <div>
+                    <div>
+                      <table class="table table-stripe">
+                        <tr>
+                          <th>
+                            <font color="black">RFID Number</font>
+                          </th>
+                          <th>
+                            <font color="black">Name</font>
+                          </th>
+                          <th>
+                            <font cplor="black">Parking Date</font>
+                          </th>
+                          <th>
+                            <font cplor="black">Parking Time</font>
+                          </th>
+                        </tr>
+
+                        <tbody>
+                          {this.state.val1.map(val => {
+                            return (
+                              <tr>
+                                <td>{val.id}</td>
+                                <td>{val.name}</td>
+                                <td>
+                                  {val.date} / {val.month} / {val.year}
+                                </td>
+                                <td>
+                                  {val.hour} : {val.minutes}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                }
+              />
+            </Col>
+
+            {/*Col md={12}>
               <Card
                 title="Revenue"
                 category="Here is a subtitle for this table"
@@ -271,7 +260,7 @@ class TableList extends Component {
                   </Table>
                 }
               />
-            </Col>
+              </Col>*/}
           </Row>
         </Grid>
       </div>

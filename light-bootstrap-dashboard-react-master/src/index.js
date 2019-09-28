@@ -24,7 +24,17 @@ import "./assets/css/animate.min.css";
 import "./assets/sass/light-bootstrap-dashboard-react.scss?v=1.3.0";
 import "./assets/css/demo.css";
 import "./assets/css/pe-icon-7-stroke.css";
-
+import { Provider } from "react-redux";
+import { createStore } from "redux";
+import reducer from "./views/Store/Reducer";
 import App from "./App";
+import Temp from "./views/Temp";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+const store = createStore(reducer);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);

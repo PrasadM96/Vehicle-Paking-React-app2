@@ -27,7 +27,10 @@ class Typography extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: null
+      id: null,
+      parking_id: null,
+      arr: [],
+      delarr: []
     };
 
     this.app = fbConfig.database();
@@ -36,15 +39,33 @@ class Typography extends Component {
   onChangeHandle = e => {
     this.setState({ id: e.target.value });
     console.log(this.state.id);
+    console.log(this.state.parking_id);
   };
 
-  submitHandle = () => {
-    this.app
-      .ref("Car_Parking/Registered")
-      .child(this.state.id)
-      .push({
+  handleDelete = e => {
+    console.log(e);
+    //get a copy
+    var content = this.app.ref("Car_Parking");
+    var values;
+    content.child("Registered/" + e).on("value", snapshot => {
+      values = snapshot.val();
+    });
+
+    //remove
+    content
+      .child("Registered")
+      .child(e)
+      .remove();
+
+    this.app.ref("Car_Parking");
+
+    content
+      .child("Deleted")
+      .child(e)
+      .set({
         Acc_bal: "0",
-        Name: "default",
+        Email: this.values["Email"],
+        Name: values["Name"],
         Park: {
           Park_Time: {
             Date: 0,
@@ -53,37 +74,91 @@ class Typography extends Component {
             Month: 0,
             Year: 0
           },
-          Status: 1,
+          Status: 0,
           isPaid: 0
         },
+        Pswd: 0,
         Tel: 0
-      })
-      .then(window.alert("Success! ", { type: "success" }));
-    console.log("success");
+      });
+  };
+
+  handleUndo = e => {
+    console.log(e);
+  };
+
+  submitHandle = () => {
+    if (this.state.id == null) {
+      window.alert("Rfid field can not be empty");
+    } else {
+      this.app
+        .ref("Car_Parking/Registered")
+        .child(this.state.id)
+        .set({
+          Acc_bal: "0",
+          Email: "null",
+          Name: "permitted",
+          Park: {
+            Park_Time: {
+              Date: 0,
+              Hour: 0,
+              Minutes: 0,
+              Month: 0,
+              Year: 0
+            },
+            Status: 0,
+            isPaid: 0
+          },
+          Pswd: 0,
+          Tel: 0
+        })
+        .then(window.alert("Success! ", { type: "success" }));
+      console.log("success");
+    }
+  };
+
+  componentDidMount = () => {
+    this.app.ref("Car_Parking/Registered").on("value", snapshot => {
+      var values;
+      values = snapshot.val();
+      console.log(values);
+      let array = [];
+      array = Object.keys(values);
+      console.log("array ", array);
+      this.setState({ arr: array });
+    });
   };
 
   render() {
+    console.log("Array ", this.state.arr);
     return (
       <div className="content">
         <Grid fluid>
           <Row>
-            <Col md={12}>
+            <Col md={6}>
               <Card
-                title="Light Bootstrap Table Heading"
-                category="Created using Roboto Font Family"
+                title="Add User"
+                category=""
                 content={
                   <div>
                     <form>
-                      <div className="header">Personal Details</div>
                       <div className="box">
                         <div className="input-group">
-                          <label htmlFor="name">Name</label>
+                          <label htmlFor="Rfid Tag">Parking</label>
+                          <input
+                            id="parking_id"
+                            type="text"
+                            name="Rfid Card Number"
+                            className="login-input"
+                            placeholder="Parking No"
+                            onChange={this.onChangeHandle}
+                          />
+                          <label htmlFor="Rfid Tag">RFID</label>
                           <input
                             id="id"
                             type="text"
-                            name="name"
+                            name="Rfid Card Number"
                             className="login-input"
-                            placeholder="Name"
+                            placeholder="Rfid"
                             onChange={this.onChangeHandle}
                           />
                         </div>
@@ -97,6 +172,88 @@ class Typography extends Component {
                         </button>
                       </div>
                     </form>
+                  </div>
+                }
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={12}>
+              <Card
+                title="Delete Users"
+                category=""
+                content={
+                  <div>
+                    <table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Registered Users</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.arr.map((e, key) => {
+                          return (
+                            <tr>
+                              <td>{key + 1}</td>
+                              <td>{e}</td>
+
+                              <td>
+                                <button
+                                  type="button"
+                                  class="btn btn-warning btn-sm"
+                                  onClick={this.handleDelete.bind(this, e)}
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                }
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={12}>
+              <Card
+                title="Undo Users"
+                category=""
+                content={
+                  <div>
+                    <table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Deleted Users</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.delarr.map((e, key) => {
+                          return (
+                            <tr>
+                              <td>{key + 1}</td>
+                              <td>{e}</td>
+
+                              <td>
+                                <button
+                                  type="button"
+                                  class="btn btn-primary btn-sm"
+                                  onClick={this.handleUndo.bind(this, e)}
+                                >
+                                  Undo
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 }
               />

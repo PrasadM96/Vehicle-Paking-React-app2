@@ -34,10 +34,19 @@ import {
   responsiveBar,
   legendBar
 } from "variables/Variables.jsx";
+import "./Dashboard.css";
+import app1 from "./Config";
+import { connect } from "react-redux";
 
 class Dashboard extends Component {
   state = {
-    admin: true
+    val1: [],
+    noofUnregistered: "",
+    noofRegistered: "",
+    noofslots: "",
+    acc_bal: 0,
+    labels: "",
+    series: ""
   };
 
   createLegend(json) {
@@ -50,8 +59,63 @@ class Dashboard extends Component {
     }
     return legend;
   }
+  componentDidMount() {
+    console.log(this.props);
+    const wordref = app1.database().ref("Car_Parking/Parking_Slots");
+    const counting = app1.database().ref("Car_Parking");
+
+    counting.on("value", snapshot => {
+      let values = snapshot.val();
+      console.log("adad", this.props.rfid);
+
+      if (this.props.admin == false) {
+        const acc = values["Registered"][this.props.rfid]["Acc_bal"];
+        console.log("Account balance  " + acc);
+        this.setState({ acc_bal: acc });
+      }
+
+      this.setState({
+        noofUnregistered: Object.keys(values["UnRegistered"]).length
+      });
+      this.setState({
+        noofRegistered: Object.keys(values["Registered"]).length
+      });
+
+      this.setState({
+        labels: [40, 60],
+        series: [this.state.noofRegistered, this.state.noofUnregistered]
+      });
+    });
+
+    var countslots = 0;
+
+    wordref.on("value", snapshot => {
+      let val1 = snapshot.val();
+      let newState = [];
+
+      for (let val in val1) {
+        newState.push({
+          id: val,
+          slot: val1[val].slot
+        });
+        if (val1[val].slot == 0) {
+          countslots++;
+        }
+      }
+      this.setState({ noofslots: countslots });
+      countslots = 0;
+
+      this.setState({
+        val1: newState
+      });
+
+      console.log(val1);
+    });
+  }
+
   render() {
-    return this.state.admin ? (
+    console.log("admin ", this.props.admin);
+    return this.props.admin ? (
       <div className="content">
         <Grid fluid>
           <Row>
@@ -59,36 +123,36 @@ class Dashboard extends Component {
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
                 statsText="Available Slots"
-                statsValue="125"
-                statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
+                statsValue={this.state.noofslots}
+                // statsIcon={<i className="fa fa-refresh" />}
+                // statsIconText="Updated now"
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-wallet text-success" />}
                 statsText="Revenue"
-                statsValue="$1,345"
-                statsIcon={<i className="fa fa-calendar-o" />}
-                statsIconText="Last day"
+                statsValue="1,345"
+                // statsIcon={<i className="fa fa-calendar-o" />}
+                // statsIconText="Last day"
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-users text-danger" />}
                 statsText="Unregistered Members"
-                statsValue="23"
-                statsIcon={<i className="fa fa-clock-o" />}
-                statsIconText="In the last hour"
+                statsValue={this.state.noofUnregistered}
+                // statsIcon={<i className="fa fa-clock-o" />}
+                // statsIconText="In the last hour"
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-users text-info" />}
                 statsText="Registered Members"
-                statsValue="45"
-                statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
+                statsValue={this.state.noofRegistered}
+                // statsIcon={<i className="fa fa-refresh" />}
+                // statsIconText="Updated now"
               />
             </Col>
           </Row>
@@ -98,7 +162,7 @@ class Dashboard extends Component {
                 statsIcon="fa fa-history"
                 id="chartHours"
                 title="Users Behavior"
-                category="24 Hours "
+                category=""
                 content={
                   <div className="ct-chart">
                     <ChartistGraph
@@ -115,7 +179,7 @@ class Dashboard extends Component {
                 content2={
                   <span class="pull-right">
                     <button type="button" class="btn btn-default">
-                      MOnthly
+                      Monthly
                     </button>
                     <button type="button" class="btn btn-default">
                       Weekly
@@ -128,8 +192,8 @@ class Dashboard extends Component {
               <Card
                 statsIcon="fa fa-clock-o"
                 title="Users' Division"
-                category="Last Campaign Performance"
-                stats="Campaign sent 2 days ago"
+                // category="Last Campaign Performance"
+                // stats="Campaign sent 2 days ago"
                 content={
                   <div
                     id="chartPreferences"
@@ -150,9 +214,181 @@ class Dashboard extends Component {
               <Card
                 id="availabelSlots"
                 title="Available Slots"
-                category="with their"
+                category=""
                 stats="Data information certified"
                 statsIcon="fa fa-check"
+                content={
+                  // <div>
+                  <div className="contain12">
+                    {this.state.val1.map(val => {
+                      if (val.id == "1" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot1
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "1" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot1
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "2" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot2
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "2" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot2
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "3" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot3
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "3" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot3
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "4" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot4
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "4" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot4
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "5" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot5
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "5" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot5
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "6" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot6 <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "6" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot6
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "7" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot7
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "7" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot7
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "8" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot8
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "8" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot8
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+                  </div>
+                }
+
                 // content={
                 //   <div className="ct-chart">
                 //     <ChartistGraph
@@ -195,36 +431,36 @@ class Dashboard extends Component {
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
                 statsText="Available Slots"
-                statsValue="125"
-                statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
+                statsValue={this.state.noofslots}
+                // statsIcon={<i className="fa fa-refresh" />}
+                // statsIconText="Updated now"
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-wallet text-success" />}
                 statsText="Account Balance"
-                statsValue="$1,345"
-                statsIcon={<i className="fa fa-calendar-o" />}
-                statsIconText="Last day"
+                statsValue={this.state.acc_bal}
+                // statsIcon={<i className="fa fa-calendar-o" />}
+                // statsIconText="Last day"
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-users text-danger" />}
                 statsText="Unregistered Members"
-                statsValue="23"
-                statsIcon={<i className="fa fa-clock-o" />}
-                statsIconText="In the last hour"
+                statsValue={this.state.noofUnregistered}
+                // statsIcon={<i className="fa fa-clock-o" />}
+                // statsIconText="In the last hour"
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-users text-info" />}
                 statsText="Registered Members"
-                statsValue="45"
-                statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
+                statsValue={this.state.noofRegistered}
+                // statsIcon={<i className="fa fa-refresh" />}
+                // statsIconText="Updated now"
               />
             </Col>
           </Row>
@@ -234,15 +470,175 @@ class Dashboard extends Component {
                 statsIcon="fa fa-history"
                 id="avilableslots"
                 title="Available Parking Slots"
-                category="24 Hours "
+                category="Real time updating"
                 content={
-                  <div className="ct-chart">
-                    <ChartistGraph
-                      data={dataSales}
-                      type="Line"
-                      options={optionsSales}
-                      responsiveOptions={responsiveSales}
-                    />
+                  <div className="contain12">
+                    {this.state.val1.map(val => {
+                      if (val.id == "1" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot1
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "1" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot1
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "2" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot2
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "2" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot2
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "3" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot3
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "3" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot3
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "4" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot4
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "4" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot4
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "5" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot5
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "5" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot5
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "6" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot6 <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "6" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot6
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "7" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot7
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "7" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot7
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
+
+                    {this.state.val1.map(val => {
+                      if (val.id == "8" && val.slot == "1") {
+                        return (
+                          <button className="btn1">
+                            Slot8
+                            <br />
+                            Booked{" "}
+                          </button>
+                        );
+                      }
+                      if (val.id == "8" && val.slot == "0") {
+                        return (
+                          <button className="btn1">
+                            Slot8
+                            <br />
+                            Available
+                          </button>
+                        );
+                      }
+                    })}
                   </div>
                 }
                 // legend={
@@ -257,7 +653,7 @@ class Dashboard extends Component {
               <Card
                 id="availabelSlots"
                 title="Parking Fee"
-                category="with their"
+                category=""
                 stats="Data information certified"
                 statsIcon="fa fa-check"
                 content={
@@ -279,9 +675,9 @@ class Dashboard extends Component {
             <Col md={6}>
               <Card
                 title="Details and Restrictions"
-                category="Backend development"
-                stats="Updated 3 minutes ago"
-                statsIcon="fa fa-history"
+                category=""
+                // stats="Updated 3 minutes ago"
+                // statsIcon="fa fa-history"
                 content={
                   <div className="table-full-width">
                     <table className="table">
@@ -298,4 +694,15 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+const mapStateToProps = state => {
+  console.log("dash", state.loggedRfid);
+  return {
+    admin: state.admin,
+    rfid: state.loggedRfid
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(Dashboard);

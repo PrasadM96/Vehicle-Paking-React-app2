@@ -32,12 +32,13 @@ import { Card } from "components/Card/Card.jsx";
 import { FormInputs } from "components/FormInputs/FormInputs.jsx";
 import { UserCard } from "components/UserCard/UserCard.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
-
+import { connect } from "react-redux";
 import avatar from "assets/img/faces/face-3.jpg";
 
 class UserProfile extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       amount: 100
     };
@@ -50,46 +51,21 @@ class UserProfile extends Component {
     console.log(this.state.amount);
   };
 
-  // async onToken(token) {
-  //   const response = await axios.post("https://fr4e5.sse.codesandbox.io/", {
-  //     token
-  //   });
-  //   const { status } = response.data;
-  //   console.log("Response:", response.data);
-  //   if (status === "success") {
-  //     toast("Success! Check email for details", { type: "success" });
-  //   } else {
-  //     toast("Something went wrong", { type: "error" });
-  //   }
-  // }
-  onToken = token => {
-    fetch("/save-stripe-token", {
-      method: "POST",
-      body: JSON.stringify(token)
-    }).then(response => {
-      // response.json().then(data => {
-      // alert(`We are in business, ${data.email}`);
-      // });
-      console.log(token);
-      this.setState({ isPay: true });
+  async onToken(token) {
+    const amount = 500 * 100;
+    const response = await axios.post("http://localhost:5000/checkout", {
+      token,
+      amount
     });
-  };
+    const { status } = response.data;
+    console.log("Response:", response.data);
+    if (status === "success") {
+      toast("Success! Check email for details", { type: "success" });
+    } else {
+      toast("Something went wrong", { type: "error" });
+    }
+  }
 
-  // onToken = token => {
-  //   console.log(token);
-  //   const stripe = require("stripe")("STRIPE_SECRET_KEY");
-  //   const uuid = require("uuid/v4");
-
-  //   // fetch("/save-stripe-token", {
-  //   //   method: "POST",y
-
-  //   //   body: JSON.stringify(token)
-  //   // }).then(response => {
-  //   //   response.json().then(data => {
-  //   //     alert(`We are in business, ${data.email}`);
-  //   //   });
-  //   // });
-  // };
   render() {
     return (
       <div className="content">
@@ -235,27 +211,32 @@ class UserProfile extends Component {
                   </div>
                 }
               />
-              <Card
-                title="Payment"
-                content={
-                  <div>
-                    <h5>Make your payment here</h5>
-                    <input
-                      id="amount"
-                      type="text"
-                      placeholder="Amount"
-                      onChange={this.amountHandler}
-                    />
-                    <br />
-                    <br />
-                    <StripeCheckout
-                      amount={this.state.amount}
-                      token={this.onToken}
-                      stripeKey="pk_test_JUiqa63RymMAqKT2FzqX4BAG00CGgljYEu"
-                    />
-                  </div>
-                }
-              />
+              {this.props.admin ? (
+                <div />
+              ) : (
+                <Card
+                  title="Payment"
+                  content={
+                    <div>
+                      <h5>Make your payment here</h5>
+                      <input
+                        id="amount"
+                        type="text"
+                        placeholder="Amount"
+                        onChange={this.amountHandler}
+                      />
+                      <br />
+                      <br />
+
+                      <StripeCheckout
+                        amount={this.state.amount}
+                        token={this.onToken}
+                        stripeKey="pk_test_JUiqa63RymMAqKT2FzqX4BAG00CGgljYEu"
+                      />
+                    </div>
+                  }
+                />
+              )}
             </Col>
           </Row>
         </Grid>
@@ -264,4 +245,14 @@ class UserProfile extends Component {
   }
 }
 
-export default UserProfile;
+const mapStateToProps = state => {
+  console.log("addadada", state.admin);
+  return {
+    admin: state.admin
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(UserProfile);

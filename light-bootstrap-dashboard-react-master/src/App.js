@@ -6,19 +6,10 @@ import Temp from "./views/Temp";
 
 class App extends Component {
   state = {
-    loggedin: true //if signin
+    loggedin: false //if signin
   };
   render() {
-    return this.state.loggedin ? (
-      <BrowserRouter>
-        <Switch>
-          <Route path="/admin" render={props => <AdminLayout {...props} />} />
-          <Redirect from="/" to="/admin/dashboard" />
-        </Switch>
-      </BrowserRouter>
-    ) : (
-      <Temp />
-    );
+    return <Temp />;
   }
 }
 
