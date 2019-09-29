@@ -43,7 +43,6 @@ class Typography extends Component {
   };
 
   handleDelete = e => {
-    console.log(e);
     //get a copy
     var content = this.app.ref("Car_Parking");
     var values;
@@ -51,39 +50,77 @@ class Typography extends Component {
       values = snapshot.val();
     });
 
+    //set it to deleted
+    content
+      .child("Deleted")
+      .child(e)
+      .set({
+        Acc_bal: values["Acc_bal"],
+        Email: values["Email"],
+        Name: values["Name"],
+        Park: {
+          Park_Time: {
+            Date: values["Park"]["Park_Time"]["Date"],
+            Hour: values["Park"]["Park_Time"]["Hour"],
+            Minutes: values["Park"]["Park_Time"]["Minutes"],
+            Month: values["Park"]["Park_Time"]["Month"],
+            Year: values["Park"]["Park_Time"]["Year"]
+          },
+          Status: values["Park"]["Status"],
+          isPaid: values["Park"]["isPaid"]
+        },
+        Pswd: values["Pswd"],
+        Tel: values["Tel"]
+      });
+
     //remove
     content
       .child("Registered")
       .child(e)
       .remove();
-
-    this.app.ref("Car_Parking");
-
-    content
-      .child("Deleted")
-      .child(e)
-      .set({
-        Acc_bal: "0",
-        Email: this.values["Email"],
-        Name: values["Name"],
-        Park: {
-          Park_Time: {
-            Date: 0,
-            Hour: 0,
-            Minutes: 0,
-            Month: 0,
-            Year: 0
-          },
-          Status: 0,
-          isPaid: 0
-        },
-        Pswd: 0,
-        Tel: 0
-      });
   };
 
   handleUndo = e => {
-    console.log(e);
+    var content = this.app.ref("Car_Parking");
+    var values;
+    content.child("Deleted/" + e).on("value", snapshot => {
+      values = snapshot.val();
+    });
+    content
+      .child("Registered")
+      .child(e)
+      .set({
+        Acc_bal: values["Acc_bal"],
+        Email: values["Email"],
+        Name: values["Name"],
+        Park: {
+          Park_Time: {
+            Date: values["Park"]["Park_Time"]["Date"],
+            Hour: values["Park"]["Park_Time"]["Hour"],
+            Minutes: values["Park"]["Park_Time"]["Minutes"],
+            Month: values["Park"]["Park_Time"]["Month"],
+            Year: values["Park"]["Park_Time"]["Year"]
+          },
+          Status: values["Park"]["Status"],
+          isPaid: values["Park"]["isPaid"]
+        },
+        Pswd: values["Pswd"],
+        Tel: values["Tel"]
+      });
+
+    //remove
+    content
+      .child("Deleted")
+      .child(e)
+      .remove();
+  };
+
+  handlePermantDelete = e => {
+    var content = this.app.ref("Car_Parking");
+    content
+      .child("Deleted")
+      .child(e)
+      .remove();
   };
 
   submitHandle = () => {
@@ -125,6 +162,19 @@ class Typography extends Component {
       array = Object.keys(values);
       console.log("array ", array);
       this.setState({ arr: array });
+    });
+
+    this.app.ref("Car_Parking/Deleted").on("value", snapshot => {
+      var values;
+      values = snapshot.val();
+      if (values) {
+        console.log(values);
+        let array;
+        array = Object.keys(values);
+        this.setState({ delarr: array });
+      } else {
+        this.setState({ delarr: [] });
+      }
     });
   };
 
@@ -241,13 +291,26 @@ class Typography extends Component {
                               <td>{e}</td>
 
                               <td>
-                                <button
-                                  type="button"
-                                  class="btn btn-primary btn-sm"
-                                  onClick={this.handleUndo.bind(this, e)}
-                                >
-                                  Undo
-                                </button>
+                                <span>
+                                  <button
+                                    type="button"
+                                    class="btn btn-primary btn-sm"
+                                    onClick={this.handleUndo.bind(this, e)}
+                                  >
+                                    Undo
+                                  </button>
+                                  &nbsp;
+                                  <button
+                                    type="button"
+                                    class="btn btn-warning btn-sm"
+                                    onClick={this.handlePermantDelete.bind(
+                                      this,
+                                      e
+                                    )}
+                                  >
+                                    Delete
+                                  </button>
+                                </span>
                               </td>
                             </tr>
                           );
