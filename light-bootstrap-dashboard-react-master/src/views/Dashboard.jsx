@@ -220,21 +220,23 @@ class Dashboard extends Component {
                 statsIcon="fa fa-check"
                 content={
                   // <div>
-                  <div className="contain12 ">
-                    {this.state.val1.map((val, key) => {
-                      if (val.slot == "1") {
-                        status = "Booked";
-                      } else {
-                        status = "Available";
-                      }
-                      return (
-                        <button className="btn1">
-                          Slot{key + 1}
-                          <br />
-                          {status}
-                        </button>
-                      );
-                    })}
+                  <div className="text-center">
+                    <div className="contain12 ">
+                      {this.state.val1.map((val, key) => {
+                        if (val.slot == "1") {
+                          status = "Booked";
+                        } else {
+                          status = "Available";
+                        }
+                        return (
+                          <button className="btn1">
+                            Slot{key + 1}
+                            <br />
+                            {status}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 }
 
