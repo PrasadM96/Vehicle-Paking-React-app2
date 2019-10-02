@@ -252,7 +252,7 @@ class Typography extends Component {
                               <td>
                                 <button
                                   type="button"
-                                  class="btn btn-warning btn-sm"
+                                  className="btn btn-warning btn-sm"
                                   onClick={this.handleDelete.bind(this, e)}
                                 >
                                   Delete
@@ -294,7 +294,7 @@ class Typography extends Component {
                                 <span>
                                   <button
                                     type="button"
-                                    class="btn btn-primary btn-sm"
+                                    className="btn btn-primary btn-sm"
                                     onClick={this.handleUndo.bind(this, e)}
                                   >
                                     Undo
@@ -302,7 +302,7 @@ class Typography extends Component {
                                   &nbsp;
                                   <button
                                     type="button"
-                                    class="btn btn-warning btn-sm"
+                                    className="btn btn-warning btn-sm"
                                     onClick={this.handlePermantDelete.bind(
                                       this,
                                       e

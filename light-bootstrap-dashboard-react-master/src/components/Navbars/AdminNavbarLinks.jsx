@@ -35,11 +35,11 @@ class AdminNavbarLinks extends Component {
       <div>
         <BrowserRouter>
           <Nav>
-            <NavItem eventKey={1} href="#">
+            {/* <NavItem eventKey={1} href="#">
               <i className="fa fa-dashboard" />
               <p className="hidden-lg hidden-md">Dashboard</p>
-            </NavItem>
-            <NavDropdown
+            </NavItem> */}
+            {/* <NavDropdown
               eventKey={2}
               title={notification}
               noCaret
@@ -54,7 +54,7 @@ class AdminNavbarLinks extends Component {
             <NavItem eventKey={3} href="#">
               <i className="fa fa-search" />
               <p className="hidden-lg hidden-md">Search</p>
-            </NavItem>
+            </NavItem> */}
           </Nav>
           <Nav pullRight>
             {/* <NavItem eventKey={1} href="#">

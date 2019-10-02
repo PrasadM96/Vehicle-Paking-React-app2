@@ -114,6 +114,7 @@ class Dashboard extends Component {
   }
 
   render() {
+    let status = null;
     console.log("admin ", this.props.admin);
     return this.props.admin ? (
       <div className="content">
@@ -219,172 +220,20 @@ class Dashboard extends Component {
                 statsIcon="fa fa-check"
                 content={
                   // <div>
-                  <div className="contain12">
-                    {this.state.val1.map(val => {
-                      if (val.id == "1" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot1
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
+                  <div className="contain12 ">
+                    {this.state.val1.map((val, key) => {
+                      if (val.slot == "1") {
+                        status = "Booked";
+                      } else {
+                        status = "Available";
                       }
-                      if (val.id == "1" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot1
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "2" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot2
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "2" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot2
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "3" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot3
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "3" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot3
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "4" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot4
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "4" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot4
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "5" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot5
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "5" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot5
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "6" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot6 <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "6" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot6
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "7" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot7
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "7" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot7
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "8" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot8
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "8" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot8
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
+                      return (
+                        <button className="btn1">
+                          Slot{key + 1}
+                          <br />
+                          {status}
+                        </button>
+                      );
                     })}
                   </div>
                 }
@@ -472,173 +321,23 @@ class Dashboard extends Component {
                 title="Available Parking Slots"
                 category="Real time updating"
                 content={
-                  <div className="contain12">
-                    {this.state.val1.map(val => {
-                      if (val.id == "1" && val.slot == "1") {
+                  <div className="text-center">
+                    <div className="contain12 ">
+                      {this.state.val1.map((val, key) => {
+                        if (val.slot == "1") {
+                          status = "Booked";
+                        } else {
+                          status = "Available";
+                        }
                         return (
                           <button className="btn1">
-                            Slot1
+                            Slot{key + 1}
                             <br />
-                            Booked{" "}
+                            {status}
                           </button>
                         );
-                      }
-                      if (val.id == "1" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot1
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "2" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot2
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "2" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot2
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "3" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot3
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "3" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot3
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "4" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot4
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "4" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot4
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "5" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot5
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "5" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot5
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "6" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot6 <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "6" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot6
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "7" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot7
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "7" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot7
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
-
-                    {this.state.val1.map(val => {
-                      if (val.id == "8" && val.slot == "1") {
-                        return (
-                          <button className="btn1">
-                            Slot8
-                            <br />
-                            Booked{" "}
-                          </button>
-                        );
-                      }
-                      if (val.id == "8" && val.slot == "0") {
-                        return (
-                          <button className="btn1">
-                            Slot8
-                            <br />
-                            Available
-                          </button>
-                        );
-                      }
-                    })}
+                      })}
+                    </div>
                   </div>
                 }
                 // legend={

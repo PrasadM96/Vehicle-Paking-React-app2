@@ -21,6 +21,7 @@ import { NavLink } from "react-router-dom";
 import AdminNavbarLinks from "../Navbars/AdminNavbarLinks.jsx";
 
 import logo from "assets/img/reactlogo.png";
+import { connect } from "react-redux";
 
 class Sidebar extends Component {
   constructor(props) {
@@ -43,6 +44,13 @@ class Sidebar extends Component {
     const sidebarBackground = {
       backgroundImage: "url(" + this.props.image + ")"
     };
+
+    let routes = [...this.props.routes];
+
+    if (!this.props.admin) {
+      routes.splice(3, 1);
+    }
+
     return (
       <div
         id="sidebar"
@@ -72,7 +80,8 @@ class Sidebar extends Component {
         <div className="sidebar-wrapper">
           <ul className="nav">
             {this.state.width <= 991 ? <AdminNavbarLinks /> : null}
-            {this.props.routes.map((prop, key) => {
+
+            {routes.map((prop, key) => {
               if (!prop.redirect)
                 return (
                   <li
@@ -102,4 +111,16 @@ class Sidebar extends Component {
   }
 }
 
-export default Sidebar;
+// export default Sidebar;
+
+const mapStateToProps = state => {
+  console.log("dash", state.loggedRfid);
+  return {
+    admin: state.admin
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  null
+)(Sidebar);

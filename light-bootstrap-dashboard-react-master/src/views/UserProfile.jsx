@@ -17,6 +17,7 @@
 */
 import React, { Component } from "react";
 import StripeCheckout from "react-stripe-checkout";
+import Icons from "views/Icons.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -34,15 +35,33 @@ import { UserCard } from "components/UserCard/UserCard.jsx";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { connect } from "react-redux";
 import avatar from "assets/img/faces/face-3.jpg";
+import fbConfig from "./Config";
 
 class UserProfile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      amount: 100
+      amount: 100,
+      values: []
     };
   }
+
+  componentDidMount = () => {
+    let app = fbConfig.database().ref("Car_Parking");
+    let values;
+    let child = "Registered/" + this.props.rfid;
+    if (this.props.rfid) {
+      child = "admin";
+    }
+    app.child(child).on("value", snapshot => {
+      values = snapshot.val();
+    });
+
+    this.setState({
+      values: values
+    });
+  };
 
   amountHandler = e => {
     this.setState({
@@ -67,6 +86,7 @@ class UserProfile extends Component {
   }
 
   render() {
+    // console.log("user--------------", this.state.values);
     return (
       <div className="content">
         <Grid fluid>
@@ -77,28 +97,30 @@ class UserProfile extends Component {
                 content={
                   <form>
                     <FormInputs
-                      ncols={["col-md-5", "col-md-3", "col-md-4"]}
+                      ncols={["col-md-6", "col-md-6"]}
                       properties={[
+                        // {
+                        //   label: "Company (disabled)",
+                        //   type: "text",
+                        //   bsClass: "form-control",
+                        //   placeholder: "Company",
+                        //   defaultValue: "Creative Code Inc.",
+                        //   disabled: true
+                        // },
                         {
-                          label: "Company (disabled)",
-                          type: "text",
-                          bsClass: "form-control",
-                          placeholder: "Company",
-                          defaultValue: "Creative Code Inc.",
-                          disabled: true
-                        },
-                        {
-                          label: "Username",
+                          label: "Username ",
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "Username",
-                          defaultValue: "michael23"
+                          defaultValue: this.props.rfid,
+                          disabled: true
                         },
                         {
                           label: "Email address",
                           type: "email",
                           bsClass: "form-control",
-                          placeholder: "Email"
+                          placeholder: "Email",
+                          defaultValue: this.state.values["Email"]
                         }
                       ]}
                     />
@@ -110,14 +132,14 @@ class UserProfile extends Component {
                           type: "text",
                           bsClass: "form-control",
                           placeholder: "First name",
-                          defaultValue: "Mike"
+                          defaultValue: this.state.values["Name"]
                         },
                         {
-                          label: "Last name",
+                          label: "Telephone Number",
                           type: "text",
                           bsClass: "form-control",
-                          placeholder: "Last name",
-                          defaultValue: "Andrew"
+                          placeholder: "Tel",
+                          defaultValue: this.state.values["Tel"]
                         }
                       ]}
                     />
@@ -134,7 +156,7 @@ class UserProfile extends Component {
                         }
                       ]}
                     />
-                    <FormInputs
+                    {/* <FormInputs
                       ncols={["col-md-4", "col-md-4", "col-md-4"]}
                       properties={[
                         {
@@ -158,7 +180,7 @@ class UserProfile extends Component {
                           placeholder: "ZIP Code"
                         }
                       ]}
-                    />
+                    /> */}
 
                     <Row>
                       <Col md={12}>
@@ -186,8 +208,8 @@ class UserProfile extends Component {
               <UserCard
                 bgImage="https://ununsplash.imgix.net/photo-1431578500526-4d9613015464?fit=crop&fm=jpg&h=300&q=75&w=400"
                 avatar={avatar}
-                name="Mike Andrew"
-                userName="michael24"
+                name={this.state.values["Name"]}
+                userName={this.props.rfid}
                 description={
                   <span>
                     "Lamborghini Mercy
@@ -197,19 +219,19 @@ class UserProfile extends Component {
                     I'm in that two seat Lambo"
                   </span>
                 }
-                socials={
-                  <div>
-                    <Button simple>
-                      <i className="fa fa-facebook-square" />
-                    </Button>
-                    <Button simple>
-                      <i className="fa fa-twitter" />
-                    </Button>
-                    <Button simple>
-                      <i className="fa fa-google-plus-square" />
-                    </Button>
-                  </div>
-                }
+                // socials={
+                //   <div>
+                //     <Button simple>
+                //       <i className="fa fa-facebook-square" />
+                //     </Button>
+                //     <Button simple>
+                //       <i className="fa fa-twitter" />
+                //     </Button>
+                //     <Button simple>
+                //       <i className="fa fa-google-plus-square" />
+                //     </Button>
+                //   </div>
+                // }
               />
               {this.props.admin ? (
                 <div />
@@ -248,7 +270,8 @@ class UserProfile extends Component {
 const mapStateToProps = state => {
   console.log("addadada", state.admin);
   return {
-    admin: state.admin
+    admin: state.admin,
+    rfid: state.loggedRfid
   };
 };
 
