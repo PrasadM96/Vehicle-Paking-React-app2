@@ -498,7 +498,7 @@ var dataPie = {
 };
 var legendPie = {
   names: ["Unregistered", "Registered"],
-  types: ["info", "danger"]
+  types: ["danger", "info"]
 };
 
 // Data for Line Chart

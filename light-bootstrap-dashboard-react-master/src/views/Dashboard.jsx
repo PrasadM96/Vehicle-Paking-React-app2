@@ -44,9 +44,7 @@ class Dashboard extends Component {
     noofUnregistered: "",
     noofRegistered: "",
     noofslots: "",
-    acc_bal: 0,
-    labels: "",
-    series: ""
+    acc_bal: 0
   };
 
   createLegend(json) {
@@ -81,10 +79,7 @@ class Dashboard extends Component {
         noofRegistered: Object.keys(values["Registered"]).length
       });
 
-      this.setState({
-        labels: [40, 60],
-        series: [this.state.noofRegistered, this.state.noofUnregistered]
-      });
+      let newState = [this.state.noofRegistered, this.state.noofUnregistered];
     });
 
     var countslots = 0;
@@ -115,7 +110,18 @@ class Dashboard extends Component {
 
   render() {
     let status = null;
-    console.log("admin ", this.props.admin);
+
+    let unreg = this.state.noofUnregistered,
+      reg = this.state.noofRegistered;
+    let unregp = ((unreg * 100) / (reg + unreg)).toFixed(2);
+    let regp = ((reg * 100) / (reg + unreg)).toFixed(2);
+    console.log("SsSsSs", regp, unregp);
+
+    let obj = {
+      labels: [regp.toString() + "%", unregp.toString() + "%  "],
+      series: [reg, unreg]
+    };
+
     return this.props.admin ? (
       <div className="content">
         <Grid fluid>
@@ -200,7 +206,7 @@ class Dashboard extends Component {
                     id="chartPreferences"
                     className="ct-chart ct-perfect-fourth"
                   >
-                    <ChartistGraph data={dataPie} type="Pie" />
+                    <ChartistGraph data={obj} type="Pie" />
                   </div>
                 }
                 legend={

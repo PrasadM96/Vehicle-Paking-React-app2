@@ -71,7 +71,8 @@ class UserProfile extends Component {
   };
 
   async onToken(token) {
-    const amount = 500 * 100;
+    let amount = 500 * 100;
+
     const response = await axios.post("http://localhost:5000/checkout", {
       token,
       amount
