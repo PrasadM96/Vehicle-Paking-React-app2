@@ -280,6 +280,7 @@ class Temp extends Component {
 
   onPasswordChange(e) {
     this.setState({ password: e.target.value });
+    console.log("pswd---------------", this.state.password);
     this.clearValidationErr("password");
 
     this.setState({ pwdState: "weak" });
