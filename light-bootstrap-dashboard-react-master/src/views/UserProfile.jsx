@@ -17,6 +17,7 @@
 */
 import React, { Component } from "react";
 import StripeCheckout from "react-stripe-checkout";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Icons from "views/Icons.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";

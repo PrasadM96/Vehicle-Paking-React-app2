@@ -284,10 +284,13 @@ class Temp extends Component {
     this.clearValidationErr("password");
 
     this.setState({ pwdState: "weak" });
-    if (e.target.value.length > 8) {
-      this.setState({ pwdState: "medium" });
-    } else if (e.target.value.length > 12) {
+
+    if (e.target.value.length > 12) {
       this.setState({ pwdState: "strong" });
+    } else if (e.target.value.length > 10) {
+      this.setState({ pwdState: "medium" });
+    } else if (e.target.value.length > 8) {
+      this.setState({ pwdState: "normal" });
     }
   }
 
@@ -383,21 +386,23 @@ class Temp extends Component {
       //No (else if or else) statements cause we need to check for all possible elements
     }
 
+    let pwidth = null;
     let pwdWeak = false,
       pwdMedium = false,
       pwdStrong = false;
+
     //Weak password set onlt the pwdWeak to true, cause render only the first bar
-    if (this.state.pwdState == "weak") {
-      pwdWeak = true;
-    } else if (this.state.pwdState == "medium") {
-      //Medium pwd then render the weak and medium bars
-      pwdWeak = true;
-      pwdMedium = true;
-    } else if (this.state.pwdState == "strong") {
+    if (this.state.pwdState === "weak") {
+      pwidth = "25%";
+    } else if (this.state.pwdState === "normal") {
       //Strong, render all the previoud bars
-      pwdWeak = true;
-      pwdMedium = true;
-      pwdStrong = true;
+      pwidth = "50%";
+    } else if (this.state.pwdState === "medium") {
+      //Medium pwd then render the weak and medium bars
+      pwidth = "75%";
+    } else if (this.state.pwdState === "strong") {
+      //Strong, render all the previoud bars
+      pwidth = "100%";
     }
 
     console.log("register", this.state.registered);
@@ -421,7 +426,9 @@ class Temp extends Component {
           <div className="bg">
             <BrowserRouter>
               <Navbar bg="light" expand="lg">
-                <Navbar.Brand href="#home">Vehicle Parking</Navbar.Brand>
+                <Navbar.Brand href="#home">
+                  <h2>Vehicle Parking</h2>
+                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                   <Nav pullRight>
@@ -640,26 +647,35 @@ class Temp extends Component {
                                   </small>
 
                                   {this.state.password && (
-                                    <div className="password-state">
+                                    <div
+                                      className="progress"
+                                      style={{ width: "250px", height: "5px" }}
+                                    >
                                       <div
-                                        className={
-                                          "pwd pwd-weak " +
-                                          (pwdWeak ? "show" : "")
-                                        }
-                                      ></div>
-                                      <div
-                                        className={
-                                          "pwd pwd-medium " +
-                                          (pwdMedium ? "show" : "")
-                                        }
-                                      ></div>
-                                      <div
-                                        className={
-                                          "pwd pwd-strong " +
-                                          (pwdStrong ? "show" : "")
-                                        }
+                                        className="progress-bar bg-success"
+                                        style={{ width: pwidth }}
                                       ></div>
                                     </div>
+                                    // <div className="password-state">
+                                    //   <div
+                                    //     className={
+                                    //       "pwd pwd-weak " +
+                                    //       (pwdWeak ? "show" : "")
+                                    //     }
+                                    //   ></div>
+                                    //   <div
+                                    //     className={
+                                    //       "pwd pwd-medium " +
+                                    //       (pwdMedium ? "show" : "")
+                                    //     }
+                                    //   ></div>
+                                    //   <div
+                                    //     className={
+                                    //       "pwd pwd-strong " +
+                                    //       (pwdStrong ? "show" : "")
+                                    //     }
+                                    //   ></div>
+                                    // </div>
                                   )}
                                 </div>
                                 <div className="input-group">
