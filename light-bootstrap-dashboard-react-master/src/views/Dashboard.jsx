@@ -37,6 +37,7 @@ import {
 import "./Dashboard.css";
 import app1 from "./Config";
 import { connect } from "react-redux";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 class Dashboard extends Component {
   state = {

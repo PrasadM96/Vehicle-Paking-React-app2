@@ -26,11 +26,13 @@ import Card from "components/Card/Card.jsx";
 class Typography extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       id: null,
       parking_id: null,
       arr: [],
-      delarr: []
+      delarr: [],
+      rfidTemp: true
     };
 
     this.app = fbConfig.database();
@@ -124,8 +126,17 @@ class Typography extends Component {
   };
 
   submitHandle = () => {
-    if (this.state.id == null) {
-      window.alert("Rfid field can not be empty");
+    let word1 = [this.state.id];
+
+    var patt = /^[0-9A-Z]{2}\s[0-9A-Z]{2}\s[0-9A-Z]{2}\s[0-9A-Z]{2}$/g;
+    let temp = patt.test(word1.toString());
+
+    this.setState({
+      rfidTemp: temp
+    });
+
+    if (!temp) {
+      console.log("rfid Temp is false");
     } else {
       this.app
         .ref("Car_Parking/Registered")
@@ -179,7 +190,10 @@ class Typography extends Component {
   };
 
   render() {
-    console.log("Array ", this.state.arr);
+    let user = null;
+    if (!this.state.rfidTemp) {
+      user = "Incorrect RFID";
+    }
     return (
       <div className="content">
         <Grid fluid>
@@ -209,8 +223,10 @@ class Typography extends Component {
                             name="Rfid Card Number"
                             className="login-input"
                             placeholder="Rfid"
+                            required
                             onChange={this.onChangeHandle}
                           />
+                          <h5 style={{ color: "red" }}> {user}</h5>
                         </div>
 
                         <button

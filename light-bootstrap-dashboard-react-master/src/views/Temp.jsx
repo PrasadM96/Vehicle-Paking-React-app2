@@ -10,7 +10,8 @@ import "./SignUp.css";
 import fbConfig from "./Config";
 import firebase from "firebase";
 import AdminLayout from "layouts/Admin.jsx";
-import DetailedForm from "./DetailForm";
+
+import { Base64 } from "js-base64";
 ///////////
 
 import {
@@ -55,6 +56,16 @@ class Temp extends Component {
       status: 0
     };
   }
+
+  encrypt_password = val => {
+    var temp = Base64.encode(val);
+    return temp;
+  };
+
+  decrypt_password = val => {
+    var temp = Base64.decode(val);
+    return temp;
+  };
 
   showLoginBox() {
     this.setState({ isLoginOpen: true, isRegisterOpen: false });
@@ -113,42 +124,46 @@ class Temp extends Component {
 
   submitDetails(e) {
     //Check for all input fields and show errors if empty (you can implement other cases!)
-
+    let temp = false;
     //console.log(this.state);
     if (this.state.name == "") {
       this.showValidationErrDetail("name", "Name Cannot be empty!");
+      temp = true;
     }
     if (this.state.address == "") {
       this.showValidationErrDetail("address", "Address  Cannot be empty!");
+      temp = true;
     }
     if (this.state.telephone == "") {
       this.showValidationErrDetail("telephone", "Telephone Cannot be empty!");
+      temp = true;
     }
     if (this.state.email == "") {
       this.showValidationErrDetail("email", "Email Cannot be empty!");
+      temp = true;
     }
 
-    console.log(
-      this.state.email,
-      this.state.address,
-      this.state.telephone,
-      this.state.name
-    );
+    if (this.state.telephone.length != 10) {
+      temp = true;
+    }
 
-    const rfid = this.state.rfid;
-    const email = this.state.email;
-    const name = this.state.name;
-    const telephone = this.state.telephone;
-    const app = fbConfig.database().ref("Car_Parking/Registered/" + rfid);
-    var updates = {};
-    updates["/Email"] = email;
-    updates["/Name"] = name;
-    updates["/Tel"] = telephone;
+    if (temp === false) {
+      const rfid = this.state.rfid;
+      const email = this.state.email;
+      const name = this.state.name;
+      const telephone = this.state.telephone;
 
-    console.log("rfiiiiid", updates);
+      const app = fbConfig.database().ref("Car_Parking/Registered/" + rfid);
+      var updates = {};
+      updates["/Email"] = email;
+      updates["/Name"] = name;
+      updates["/Tel"] = telephone;
 
-    app.update(updates);
-    this.setState({ status: 1 });
+      console.log("rfiiiiid", updates);
+
+      app.update(updates);
+      this.setState({ status: 1 });
+    }
   }
 
   ////////////////////login/////////
@@ -178,7 +193,6 @@ class Temp extends Component {
   }
 
   submitLogin(e) {
-    console.log("submit");
     const app = fbConfig.database().ref("Car_Parking");
     const app1 = fbConfig.database().ref("Car_Parking/admin");
     if (this.state.loginRfid === "admin") {
@@ -215,7 +229,7 @@ class Temp extends Component {
         if (result == 1) {
           console.log("rfid correct");
           const pwd = values[this.state.loginRfid]["Pswd"];
-          if (this.state.loginPassword == pwd) {
+          if (this.state.loginPassword == this.decrypt_password(pwd)) {
             console.log("correct");
             this.setState({ logged: true });
             this.props.send(this.state.loginRfid);
@@ -287,10 +301,12 @@ class Temp extends Component {
 
     if (e.target.value.length > 12) {
       this.setState({ pwdState: "strong" });
-    } else if (e.target.value.length > 10) {
+    } /* else if (e.target.value.length > 10) {
       this.setState({ pwdState: "medium" });
-    } else if (e.target.value.length > 8) {
-      this.setState({ pwdState: "normal" });
+    }*/ else if (
+      e.target.value.length > 8
+    ) {
+      this.setState({ pwdState: "medium" });
     }
   }
 
@@ -334,7 +350,7 @@ class Temp extends Component {
             });
 
             var updates = {};
-            updates["/Pswd"] = this.state.password;
+            updates["/Pswd"] = this.encrypt_password(this.state.password);
             app.child(e).update(updates);
           } else {
             this.showValidationErr("username", "Incorrect rfid number");
@@ -386,23 +402,30 @@ class Temp extends Component {
       //No (else if or else) statements cause we need to check for all possible elements
     }
 
-    let pwidth = null;
+    let pwidth = null,
+      pcolor = null;
     let pwdWeak = false,
       pwdMedium = false,
       pwdStrong = false;
 
     //Weak password set onlt the pwdWeak to true, cause render only the first bar
     if (this.state.pwdState === "weak") {
-      pwidth = "25%";
-    } else if (this.state.pwdState === "normal") {
+      pwidth = "33%";
+      pcolor = "#e74c3c";
+    } /* else if (this.state.pwdState === "normal") {
       //Strong, render all the previoud bars
       pwidth = "50%";
-    } else if (this.state.pwdState === "medium") {
+      pcolor = "#e8bd31";
+    }*/ else if (
+      this.state.pwdState === "medium"
+    ) {
       //Medium pwd then render the weak and medium bars
-      pwidth = "75%";
+      pwidth = "66%";
+      pcolor = "#e8bd31";
     } else if (this.state.pwdState === "strong") {
       //Strong, render all the previoud bars
       pwidth = "100%";
+      pcolor = "#2ecc71";
     }
 
     console.log("register", this.state.registered);
@@ -649,12 +672,17 @@ class Temp extends Component {
                                   {this.state.password && (
                                     <div
                                       className="progress"
-                                      style={{ width: "250px", height: "5px" }}
+                                      style={{ width: "250px", height: "20px" }}
                                     >
                                       <div
-                                        className="progress-bar bg-success"
-                                        style={{ width: pwidth }}
-                                      ></div>
+                                        className="progress-bar bg-success "
+                                        style={{
+                                          width: pwidth,
+                                          background: pcolor
+                                        }}
+                                      >
+                                        {this.state.pwdState}
+                                      </div>
                                     </div>
                                     // <div className="password-state">
                                     //   <div
