@@ -3,6 +3,7 @@ import SignIn from "./SignIn";
 import { BrowserRouter, Switch, Redirect } from "react-router-dom";
 import Route from "react-router-dom/Route";
 //import { Redirect } from "react-router";
+import AboutUs from "./AboutUs";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 //signin//////////
@@ -144,7 +145,8 @@ class Temp extends Component {
       temp = true;
     }
 
-    if (this.state.telephone.length != 10) {
+    if (this.state.telephone.length != 10 && this.state.telephone !== "") {
+      this.showValidationErrDetail("telephone", "Must contain 10 digits!");
       temp = true;
     }
 
@@ -781,6 +783,7 @@ class Temp extends Component {
             <br />
             About Us
           </h1>
+          <AboutUs />
         </div>
       </div>
     );
