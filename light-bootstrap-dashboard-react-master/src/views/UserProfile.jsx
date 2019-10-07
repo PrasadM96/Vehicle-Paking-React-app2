@@ -74,10 +74,13 @@ class UserProfile extends Component {
   async onToken(token) {
     let amount = 500 * 100;
 
-    const response = await axios.post("http://localhost:5000/checkout", {
-      token,
-      amount
-    });
+    const response = await axios.post(
+      "https://ceylon-life.firebaseapp.com/checkout",
+      {
+        token,
+        amount
+      }
+    );
     const { status } = response.data;
     console.log("Response:", response.data);
     if (status === "success") {

@@ -39,7 +39,7 @@ class Temp extends Component {
       loginRfid: 0,
       logged: false,
       array: "",
-      rfid: "",
+      username: "",
       confirm: "",
       password: "",
       errorsD: [],
@@ -53,6 +53,7 @@ class Temp extends Component {
       telephone: "",
       email: "",
       errors: [],
+      errorsL: [],
       status: 0
     };
   }
@@ -78,8 +79,8 @@ class Temp extends Component {
   //////detail//////
   showValidationErrDetail(elm, msg) {
     this.setState(prevState => ({
-      errors: [
-        ...prevState.errors,
+      errorsD: [
+        ...prevState.errorsD,
         {
           elm,
           msg
@@ -92,19 +93,19 @@ class Temp extends Component {
     this.setState(prevState => {
       let newArr = [];
       //Add all elements from the prev array to the new one that has a different element
-      for (let err of prevState.errors) {
+      for (let err of prevState.errorsD) {
         if (elm != err.elm) {
           newArr.push(err);
         }
       }
-      return { errors: newArr };
+      return { errorsD: newArr };
     });
   }
 
   onnameChangeDetail(e) {
     this.setState({ name: e.target.value });
     //We want to clear the error when ever the user type something new
-    this.clearValidationErr("name");
+    this.clearValidationErrDetail("name");
   }
 
   onAddressChangeDetail(e) {
@@ -169,8 +170,8 @@ class Temp extends Component {
   ////////////////////login/////////
   showValidationErrlog(elm, msg) {
     this.setState(prevState => ({
-      errors: [
-        ...prevState.errors,
+      errorsL: [
+        ...prevState.errorsL,
         {
           elm,
           msg
@@ -179,80 +180,93 @@ class Temp extends Component {
     }));
   }
   //Remove a specific element from the array
-  clearValidationErr(elm) {
+  clearValidationErrlog(elm) {
     this.setState(prevState => {
       let newArr = [];
       //Add all elements from the prev array to the new one that has a different element
-      for (let err of prevState.errors) {
+      for (let err of prevState.errorsL) {
         if (elm != err.elm) {
           newArr.push(err);
         }
       }
-      return { errors: newArr };
+      return { errorsL: newArr };
     });
-  }
-
-  submitLogin(e) {
-    const app = fbConfig.database().ref("Car_Parking");
-    const app1 = fbConfig.database().ref("Car_Parking/admin");
-    if (this.state.loginRfid === "admin") {
-      let valadmin;
-      app1.on("value", snapshot => {
-        valadmin = snapshot.val();
-        console.log(valadmin);
-        if (this.state.loginPassword === valadmin["Pswd"]) {
-          this.setState({ logged: true });
-          this.props.send("admin");
-        } else {
-          this.showValidationErrlog("password", "wrong password!");
-        }
-      });
-    } else {
-      let values;
-
-      app.child("/Registered").on("value", snapshot => {
-        values = snapshot.val();
-        console.log("addadadaad", values);
-        const array = Object.keys(values);
-        console.log(array);
-        const val = this.state.loginRfid;
-        let result = 0;
-        array.map(e => {
-          console.log(val);
-          if (this.state.loginRfid === e) {
-            result = 1;
-          }
-        });
-
-        console.log(this.state.loginPassword);
-
-        if (result == 1) {
-          console.log("rfid correct");
-          const pwd = values[this.state.loginRfid]["Pswd"];
-          if (this.state.loginPassword == this.decrypt_password(pwd)) {
-            console.log("correct");
-            this.setState({ logged: true });
-            this.props.send(this.state.loginRfid);
-          } else {
-            window.alert("Wrong password");
-            this.showValidationErrlog("password", "wrong password");
-          }
-        } else {
-          window.alert("Not permitted ");
-          this.showValidationErrlog("username", "Not a permitted user");
-        }
-      });
-    }
   }
 
   loginRfidOnChangeHandler(e) {
     this.setState({ loginRfid: e.target.value });
+    this.clearValidationErrlog("loginRfid");
   }
 
   loginPasswdOnChangeHandler(e) {
     this.setState({ loginPassword: e.target.value });
-    console.log(this.state.loginPassword);
+    this.clearValidationErrlog("loginPassword");
   }
+
+  submitLogin(e) {
+    let temp = false;
+    if (this.state.loginRfid == "") {
+      this.showValidationErrlog("loginRfid", "Rfid Cannot be empty!");
+      temp = true;
+    }
+    if (this.state.loginPassword == "") {
+      this.showValidationErrlog("loginPassword", "Password Cannot be empty!");
+      temp = true;
+    }
+    if (temp === false) {
+      const app = fbConfig.database().ref("Car_Parking");
+      const app1 = fbConfig.database().ref("Car_Parking/admin");
+      if (this.state.loginRfid === "admin") {
+        let valadmin;
+        app1.on("value", snapshot => {
+          valadmin = snapshot.val();
+          console.log(valadmin);
+          if (this.state.loginPassword === valadmin["Pswd"]) {
+            this.setState({ logged: true });
+            this.props.send("admin");
+          } else {
+            this.showValidationErrlog("loginPassword", "wrong password!");
+          }
+        });
+      } else {
+        let values;
+
+        app.child("/Registered").on("value", snapshot => {
+          values = snapshot.val();
+          console.log("addadadaad", values);
+          const array = Object.keys(values);
+          console.log(array);
+          const val = this.state.loginRfid;
+          let result = 0;
+          array.map(e => {
+            console.log(val);
+            if (this.state.loginRfid === e) {
+              result = 1;
+            }
+          });
+
+          console.log(this.state.loginPassword);
+
+          if (result == 1) {
+            console.log("rfid correct");
+            const pwd = values[this.state.loginRfid]["Pswd"];
+            if (this.state.loginPassword == this.decrypt_password(pwd)) {
+              console.log("correct");
+              this.setState({ logged: true });
+              this.props.send(this.state.loginRfid);
+            } else {
+              // window.alert("Wrong password");
+              this.showValidationErrlog("loginPassword", "wrong password");
+            }
+          } else {
+            // window.alert("Not permitted ");
+            this.showValidationErrlog("loginRfid", "Not a permitted user");
+          }
+        });
+      }
+    }
+  }
+
   ///////////////////////////////////////////////////
 
   ////////////////register/////////////////////////
@@ -282,9 +296,9 @@ class Temp extends Component {
   }
 
   onUsernameChange(e) {
-    this.setState({ rfid: e.target.value });
+    this.setState({ username: e.target.value });
     //We want to clear the error when ever the user type something new
-    this.clearValidationErr("rfid");
+    this.clearValidationErr("username");
   }
 
   onConfirmChange(e) {
@@ -312,26 +326,30 @@ class Temp extends Component {
 
   submitRegister = e => {
     //Check for all input fields and show errors if empty (you can implement other cases!)
-
+    let temp = false;
     if (this.state.username == "") {
       this.showValidationErr("username", "Username Cannot be empty!");
       this.setState({ val: 1 });
+      temp = true;
     }
     if (this.state.confirm == "") {
       this.showValidationErr("confirm", "Confirm password Cannot be empty!");
       this.setState({ val: 1 });
+      temp = true;
     }
     if (this.state.password == "") {
       this.showValidationErr("password", "Password Cannot be empty!");
       this.setState({ val: 1 });
+      temp = true;
     }
 
     if (this.state.confirm !== this.state.password) {
       this.showValidationErr("confirm", "Passwords Don't Match");
       this.setState({ val: 1 });
+      temp = true;
     }
 
-    if (this.state.val === 0) {
+    if (temp === false) {
       const app = fbConfig.database().ref("Car_Parking/Registered");
       let values;
 
@@ -341,7 +359,7 @@ class Temp extends Component {
         this.array = Object.keys(values);
 
         this.array.map(e => {
-          if (this.state.rfid === e) {
+          if (this.state.username === e) {
             console.log("yess registered");
             this.setState({
               registered: true,
@@ -400,6 +418,18 @@ class Temp extends Component {
         confirmErr = err.msg;
       }
       //No (else if or else) statements cause we need to check for all possible elements
+    }
+
+    let usernameErrL = null,
+      passwordErrL = null;
+
+    for (let err of this.state.errorsL) {
+      if (err.elm == "loginRfid") {
+        usernameErrL = err.msg;
+      }
+      if (err.elm == "loginPassword") {
+        passwordErrL = err.msg;
+      }
     }
 
     let pwidth = null,
@@ -609,6 +639,9 @@ class Temp extends Component {
                                       this
                                     )}
                                   />
+                                  <small className="danger-error">
+                                    {usernameErrL ? usernameErrL : ""}
+                                  </small>
                                 </div>
 
                                 <div className="input-group">
@@ -623,6 +656,9 @@ class Temp extends Component {
                                       this
                                     )}
                                   />
+                                  <small className="danger-error">
+                                    {passwordErrL ? passwordErrL : ""}
+                                  </small>
                                 </div>
 
                                 <button
@@ -645,7 +681,7 @@ class Temp extends Component {
                                   </label>
                                   <input
                                     type="text"
-                                    id="rfid"
+                                    id="username"
                                     name="username"
                                     className="login-input"
                                     placeholder="Username"

@@ -127,7 +127,6 @@ class Typography extends Component {
 
   submitHandle = () => {
     let word1 = [this.state.id];
-
     var patt = /^[0-9A-Z]{2}\s[0-9A-Z]{2}\s[0-9A-Z]{2}\s[0-9A-Z]{2}$/g;
     let temp = patt.test(word1.toString());
 
